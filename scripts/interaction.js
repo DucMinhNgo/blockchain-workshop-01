@@ -11,16 +11,14 @@ const myPrivateKey = `0x${process.env.PRIV_KEY}`;
 const sendAddress = "0x765D61b0DfA3e7F83632d0003ee58eAe91050d4d";
 const receiverAddress = "0x3dCA3E2E1FECA6d187F0949301C8C20DCc408c0d";
 
-async function interact() {
-    console.log('address');
-    web3 = await new Web3('https://data-seed-prebsc-1-s1.binance.org:8545/');
-    dustinTokenContract = await new web3.eth.Contract(dustinTokenAbi, dustinTokenAddress);
-
-    //// Call func from contract: Call (đọc thông tin - ko làm thay đổi (ko phải trả phí gas)), Send (thay đổi, trả phí gas, cần priv_key)
+const checkBalance = async (dustinTokenContract) => {
+ //// Call func from contract: Call (đọc thông tin - ko làm thay đổi (ko phải trả phí gas)), Send (thay đổi, trả phí gas, cần priv_key)
     /// Call
     myBalance = await dustinTokenContract.methods.balanceOf(sendAddress).call();
     console.log({myBalance});
+}
 
+const transferToken = async (web3, dustinTokenContract) => {
     /// Send -> modify the state of the blockchain
     // transfer token
     console.log({myPrivateKey});
@@ -37,6 +35,15 @@ async function interact() {
     receiverBalanceAfter = await dustinTokenContract.methods.balanceOf(receiverAddress).call();
     console.log({receiverBalanceAfter});
     console.log({rs});
+}
+
+async function interact() {
+    console.log('address');
+    web3 = await new Web3('https://data-seed-prebsc-1-s1.binance.org:8545/');
+    dustinTokenContract = await new web3.eth.Contract(dustinTokenAbi, dustinTokenAddress);
+
+    await checkBalance(dustinTokenContract);
+    await transferToken(web3, dustinTokenContract);
 }
 
 interact();
